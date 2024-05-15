@@ -20,6 +20,7 @@ def test(req):
 class Api_client(APIView):
 
     def get(self, request: Request):
+        request
         try:
              client = Client.objects.get(password=request.data['password'], email=request.data['email'])
         except Client.DoesNotExist or KeyError:
@@ -39,24 +40,49 @@ class Api_client(APIView):
     
     def post(self, request: Request):
         print(request.data)
-        client = Client()
-
-        client.nom = request.data["nom"]
-        client.prenom = request.data['prenom']
-        client.email = request.data['email']
-        client.sexe = request.data['sexe']
-        client.password = request.data['password']
-        client.telephone = request.data['telephone']
-        client.birthdate = request.data['date_naissance']
-
-        client.utilisateur = client.nom + client.prenom + "_" + client.sexe + "_" + rand_number(Client)
 
         try:
-            client.save()
-        except Exception:
-            client.utilisateur = client.nom + client.prenom + "_" + client.sexe + rand_number()
+            pw = request.data['nom']
+            
+            client = Client()
 
-        return Response(data={"infos": f"{client.nom} enregistre avec succes"}, status=status.HTTP_201_CREATED )
+            client.nom = request.data["nom"]
+            client.prenom = request.data['prenom']
+            client.email = request.data['email']
+            client.sexe = request.data['sexe']
+            client.password = request.data['password']
+            client.telephone = request.data['telephone']
+            client.birthdate = request.data['date_naissance']
+
+            client.utilisateur = client.nom + client.prenom + "_" + client.sexe + "_" + rand_number(Client)
+
+            try:
+                client.save()
+            except Exception:
+                client.utilisateur = client.nom + client.prenom + "_" + client.sexe + rand_number()
+            
+            return Response(data={"infos": f"{client.nom} enregistre avec succes"}, status=status.HTTP_201_CREATED )
+
+            
+            
+        except Exception:   
+            try:
+                client = Client.objects.get(password=request.data['password'], email=request.data['email'])
+            except Client.DoesNotExist or KeyError:
+                return Response(data={"infos":"mot de passe ou email errone"}, status=status.HTTP_400_BAD_REQUEST)
+
+            data = {
+                "utilisateur": f"{client.utilisateur}",
+                "nom": f"{client.nom}",
+                "prenom": f"{client.prenom}",
+                "email": f"{client.email}",
+                "sexe": f"{client.sexe}",
+                "telephone": f"{client.telephone}",
+                "date_naissance": f"{client.birthdate}"
+            }
+
+            return  Response(data=data, status=status.HTTP_200_OK)
+
     
     def put(self, req: Request):
         try:
