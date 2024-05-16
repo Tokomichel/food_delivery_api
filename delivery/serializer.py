@@ -63,7 +63,8 @@ class Rest_serializer(serializers.ModelSerializer):
 
 
 class Repas_serializer(serializers.ModelSerializer):
-    plat = Plat_serializer(many=True, read_only=True)
+    plat = Plat_serializer(read_only=True)
+
 
     class Meta:
         model = Repas

@@ -113,6 +113,7 @@ class Api_restaurant(APIView):
         valid = seri.is_valid() is not True
 
         if valid:
+            print("bonne requete vers restaurant")
             return Response(seri.data, status=status.HTTP_200_OK)
         
         else:
@@ -202,3 +203,17 @@ class Api_commande(APIView):
         val = ser.is_valid()
 
         return Response(data=ser.data, status=status.HTTP_200_OK)
+    
+    def post(self, req: Request):
+        com = Commande()
+
+        com.client = Client.objects.get(id=req.data["client"])
+        com.livreur = req.data['livreur']
+        com.date_commande = req.data['date_commande']
+        com.date_debut_cuisson = req.data['date_debut_cuisson']
+        com.date_fin_cuisson = req.data['date_fin_cuisson']
+        com.date_debut_livraison = req.data['date_debu_livraison']
+        com.date_fin_livraison = req.data['date_fin_livraison']
+        com.recu = req.data['recu']
+         
+        return
