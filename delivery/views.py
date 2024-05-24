@@ -162,32 +162,54 @@ class Api_livreur(APIView):
         return Response(data, status.HTTP_200_OK)
     
     def post(self, req: Request):
-        liv = Livreur()
-        data = req.data
-
-        liv.nom = data["nom"]
-        liv.prenom = data["prenom"]
-        liv.email = data["email"]
-        liv.password = data['password']
-        liv.sexe = data['sexe']
-        liv.telephone = data['telephone']
-        liv.etat = data['etat']
-
-        liv.utilisateur = liv.nom + liv.prenom + "_" + liv.sexe + "_" + rand_number(Livreur)
-
-        if liv.note == 0:
-            liv.note = data['note']
-        else:
-            note = (float(data['note']) + liv.note) / 2
-            liv.note = note
-        
+        print(req.data)
         try:
-            liv.save()
+            print("insertion")
+            liv = Livreur()
+            data = req.data
+
+            liv.nom = data["nom"]
+            liv.prenom = data["prenom"]
+            liv.email = data["email"]
+            liv.password = data['password']
+            liv.sexe = data['sexe']
+            liv.telephone = data['telephone']
+            liv.etat = data['etat']
+
+            liv.utilisateur = liv.nom + liv.prenom + "_" + liv.sexe + "_" + rand_number(Livreur)
+
+            if liv.note == 0:
+                liv.note = data['note']
+            else:
+                note = (float(data['note']) + liv.note) / 2
+                liv.note = note
+
+            try:
+                liv.save()
+
+            except Exception:
+                return Response({"infos": "erreur"}, status.HTTP_400_BAD_REQUEST)
+
+            return Response({"infos": f"{liv.nom} ajouter avec succes"})
         
         except Exception:
-            return Response({"infos": "erreur"}, status.HTTP_400_BAD_REQUEST)
-        
-        return Response({"infos": f"{liv.nom} ajouter avec succes"})
+            print(f"authentification \t {Exception.args}")
+            try:
+                    liv = Livreur.objects.get(email=req.data['email'], password=req.data['password'])
+            except Exception:
+                    return Response({"infos":"Erreur"}, status.HTTP_400_BAD_REQUEST)
+
+            data = {
+                "utilisateur": liv.utilisateur,
+                "nom": liv.nom,
+                "prenom": liv.prenom,
+                "email": liv.email,
+                "sexe": liv.sexe,
+                "telephone": liv.telephone,
+                "note": liv.note,
+                "etat": liv.etat
+            }
+            return Response(data, status.HTTP_200_OK)
     
 
 class One_livreur(APIView):
