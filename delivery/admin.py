@@ -34,7 +34,7 @@ admin.site.register(Repas, RepasAdminView)
 admin.site.register(Commande, CommandeAdminView)
 
 admin.site.site_title = "TORUKA SYSTEM"
-admin.site.site_header = "TORUKA SYSTEM"
+admin.site.site_header = "TORUKA SYSTEM" 
 admin.site.index_title = "TORUKA SYSTEM"
 
 

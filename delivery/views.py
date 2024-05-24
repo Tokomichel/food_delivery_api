@@ -83,6 +83,7 @@ class Api_client(APIView):
 
             return  Response(data=data, status=status.HTTP_200_OK)
 
+
     
     def put(self, req: Request):
         try:
@@ -201,7 +202,7 @@ class Api_commande(APIView):
 
         ser = Com_serializer(data=objs, many=True)
         val = ser.is_valid()
-
+        print(val)
         return Response(data=ser.data, status=status.HTTP_200_OK)
     
     def post(self, req: Request):
