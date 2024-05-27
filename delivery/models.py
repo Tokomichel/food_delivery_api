@@ -38,6 +38,9 @@ class Livreur(models.Model):
     note = models.FloatField(verbose_name="Moyenne des notes", default=0)
     etat = models.CharField(max_length=1, choices=ETAT, default='O')
 
+    def __str__(self) -> str:
+        return self.nom
+
 
 class Restaurant(models.Model):
     nom = models.CharField(max_length=20)
@@ -52,12 +55,16 @@ class Plat(models.Model):
     nom = models.CharField(max_length=20)
     image_url = models.CharField(max_length=200)
     temps_cuisson = models.IntegerField()
-    restaurant = models.ForeignKey(to="Restaurant", on_delete=models.PROTECT, related_name='plats')
+    restaurant = models.ForeignKey(to="Restaurant", on_delete=models.PROTECT, related_name='plats') 
+
+    def __str__(self) -> str:
+        return self.nom
 
 
 class Commande(models.Model):
     client = models.ForeignKey(to="Client", on_delete=models.PROTECT, related_name='commandes')
-    livreur = models.CharField(max_length=10)  # ce champs sera rempli par l'id du livreur des qu'il aura accepte la commande
+    restaurant = models.ForeignKey(to='Restaurant', on_delete=models.PROTECT, related_name='commandes')
+    livreur = models.CharField(max_length=10, null=True)  # ce champs sera rempli par l'id du livreur des qu'il aura accepte la commande
     date_commande = models.DateField()
     date_debut_cuisson = models.DateField(null=True)
     date_fin_cuisson = models.DateField(null=True)
@@ -65,11 +72,14 @@ class Commande(models.Model):
     date_fin_livraison = models.DateField(null=True)
     recu = models.BooleanField()
 
-    def __str__(self) -> str:
-        return str(self.date_commande)
+    # def __str__(self) -> str:
+    #     return str(self.date_commande)
 
 
 class Repas(models.Model):
     plat = models.ForeignKey(to="Plat", on_delete=models.PROTECT, related_name='plat')
     commande = models.ForeignKey(to="Commande", on_delete=models.PROTECT, related_name='repas')
     quantite = models.IntegerField()
+
+    def __str__(self) -> str:
+      return self.nom

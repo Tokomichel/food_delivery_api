@@ -231,12 +231,33 @@ class Api_commande(APIView):
         com = Commande()
 
         com.client = Client.objects.get(id=req.data["client"])
-        com.livreur = req.data['livreur']
+
+        try:
+            com.livreur = req.data['livreur']
+        except Exception:
+            pass 
+
         com.date_commande = req.data['date_commande']
         com.date_debut_cuisson = req.data['date_debut_cuisson']
         com.date_fin_cuisson = req.data['date_fin_cuisson']
         com.date_debut_livraison = req.data['date_debu_livraison']
         com.date_fin_livraison = req.data['date_fin_livraison']
-        com.recu = req.data['recu']
+        com.recu = False
          
         return
+
+class Get_com(APIView):
+
+    def get(self, req: Request, nom):
+        print(nom)
+        coms = Commande.objects.all()
+        r_coms = []
+
+        for elt in coms:
+            if elt.restaurant.nom == nom:
+                r_coms.append(elt)
+            else:
+                pass
+        print(r_coms)
+        return Response({"infos": "requete recue"}, status=status.HTTP_200_OK)
+

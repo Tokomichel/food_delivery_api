@@ -17,12 +17,13 @@ class RepasAdminView(admin.ModelAdmin):
     list_display = ['plat', 'commande', 'quantite']
 
 class CommandeAdminView(admin.ModelAdmin):
-    list_display = ['client', 'livreur', 'date_commande']
+    list_display = ['id', 'client', 'Livreur', 'date_commande', 'recu']
     
     def Livreur(self, obj):
-        print(f"objet2: {obj}")
-        # client = Client.objects.get(id=commande.client)
-        return "okay"
+        print(f"objet: {obj}")
+        liv = Livreur.objects.get(id=int(obj.livreur))
+
+        return liv
 
 # Register your models here.
 
