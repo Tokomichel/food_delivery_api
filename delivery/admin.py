@@ -5,7 +5,7 @@ class ClientAdminView(admin.ModelAdmin):
     list_display = ['id','utilisateur', 'nom', 'prenom', 'password', 'email',  'birthdate', 'sexe']
 
 class LivreurAdminView(admin.ModelAdmin):
-    list_display = ['id', 'nom', 'prenom', 'note', 'sexe']
+    list_display = ['id', 'utilisateur', 'nom', 'prenom', 'note', 'sexe']
 
 class RestaurantAdminView(admin.ModelAdmin):
     list_display = ['id', 'nom', 'localisation', 'note']
@@ -17,7 +17,7 @@ class RepasAdminView(admin.ModelAdmin):
     list_display = ['plat', 'commande', 'quantite']
 
 class CommandeAdminView(admin.ModelAdmin):
-    list_display = ['id', 'client', 'Livreur', 'date_commande', 'recu']
+    list_display = ['id', 'client', 'Livreur', 'restaurant', 'date_commande', 'recu']
     
     def Livreur(self, obj):
         print(f"objet: {obj}")

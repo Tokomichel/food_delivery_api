@@ -80,6 +80,7 @@ class Com_serializer(serializers.ModelSerializer):
             'id',
             'client',
             'livreur',
+            'restaurant',
             'date_commande',
             'date_debut_cuisson',
             'date_debut_livraison',

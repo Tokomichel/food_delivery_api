@@ -1,3 +1,4 @@
+from ast import Try
 from django.shortcuts import HttpResponse
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -38,12 +39,9 @@ class Api_client(APIView):
 
         return  Response(data=data, status=status.HTTP_200_OK)
     
-    def post(self, request: Request):
-        print(request.data)
+    def post(self, request: Request):     
 
         try:
-            pw = request.data['nom']
-            
             client = Client()
 
             client.nom = request.data["nom"]
@@ -62,9 +60,7 @@ class Api_client(APIView):
                 client.utilisateur = client.nom + client.prenom + "_" + client.sexe + rand_number()
             
             return Response(data={"infos": f"{client.nom} enregistre avec succes"}, status=status.HTTP_201_CREATED )
-
-            
-            
+  
         except Exception:   
             try:
                 client = Client.objects.get(password=request.data['password'], email=request.data['email'])
@@ -80,7 +76,8 @@ class Api_client(APIView):
                 "telephone": f"{client.telephone}",
                 "date_naissance": f"{client.birthdate}"
             }
-
+            print(request.data)
+            print(f" {data['nom']} Connecté")
             return  Response(data=data, status=status.HTTP_200_OK)
 
 
@@ -138,6 +135,23 @@ class Api_restaurant(APIView):
             return Response({"infos": "an error occured"}, status=status.HTTP_400_BAD_REQUEST)
         
         return Response({"infos": f"{restaurant.nom} ajouter avec succes"}, status.HTTP_200_OK)
+
+    def put(self, req: Request): # noter un restaurant
+
+        try:
+            rest = Restaurant.objects.filter(nom=req.data['nom'])[0]
+        except Exception:
+            return Response(data={"infos": f"erreur le restaurant de nom {req.data['nom']} n'existe pas "}, status=status.HTTP_400_BAD_REQUEST)
+        
+        a_note = rest.note
+        n_note = float(req.data['note'])
+
+        a_note = (a_note + n_note) / 2
+
+        rest.note = a_note
+
+        rest.save()
+        return Response(data={"infos": "note changee"}, status=status.HTTP_200_OK)
 
 
 class Api_livreur(APIView):
@@ -211,6 +225,22 @@ class Api_livreur(APIView):
             }
             return Response(data, status.HTTP_200_OK)
     
+    def put(self, req: Request):
+        try:
+            rest = Livreur.objects.filter(utilisateur=req.data['username'])[0]
+        except Exception:
+            return Response(data={"infos": f"erreur le livreur de nom {req.data['username']} n'existe pas "}, status=status.HTTP_400_BAD_REQUEST)
+        
+        a_note = rest.note
+        n_note = float(req.data['note'])
+
+        a_note = (a_note + n_note) / 2
+
+        rest.note = a_note
+
+        rest.save()
+        return Response(data={"infos": "note changee"}, status=status.HTTP_200_OK)
+
 
 class One_livreur(APIView):
     def get(self, req: Request, id):
@@ -246,6 +276,7 @@ class Api_commande(APIView):
          
         return
 
+
 class Get_com(APIView):
 
     def get(self, req: Request, nom):
@@ -258,6 +289,9 @@ class Get_com(APIView):
                 r_coms.append(elt)
             else:
                 pass
-        print(r_coms)
-        return Response({"infos": "requete recue"}, status=status.HTTP_200_OK)
+        
+        ser = Com_serializer(data=r_coms, many=True)
+        val = ser.is_valid()
+
+        return Response(ser.data, status=status.HTTP_200_OK)
 
