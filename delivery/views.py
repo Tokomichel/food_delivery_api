@@ -3,7 +3,7 @@ from django.shortcuts import HttpResponse
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from .serializer import Client_serializer, Rest_serializer, Com_serializer
+from .serializer import Client_serializer, My_serializer, Rest_serializer, Com_serializer
 from .models import *
 from rest_framework.views import APIView
 
@@ -39,7 +39,7 @@ class Api_client(APIView):
 
         return  Response(data=data, status=status.HTTP_200_OK)
     
-    def post(self, request: Request):     
+    def post(self, request: Request):
 
         try:
             client = Client()
@@ -76,12 +76,11 @@ class Api_client(APIView):
                 "telephone": f"{client.telephone}",
                 "date_naissance": f"{client.birthdate}"
             }
-            print(request.data)
+            seri = My_serializer(client, ['utilisateur', 'nom', 'prenom', 'adresse', 'sexe', 'telephone', 'date_naissance'])
             print(f" {data['nom']} Connecté")
-            return  Response(data=data, status=status.HTTP_200_OK)
 
+            return  Response(data=seri.get_data(), status=status.HTTP_200_OK)
 
-    
     def put(self, req: Request):
         try:
             client = Client.objects.get(utilisateur=req.data['user_name'])

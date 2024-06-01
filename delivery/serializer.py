@@ -1,50 +1,72 @@
+from dataclasses import field
+from genericpath import exists
 from rest_framework import serializers
 from .models import *
 
 
+class My_serializer():
+
+    fields: list
+    classe: object
+    date_naissance: str = 'birthdate'
+    adresse: str = 'email'
+
+    def __init__(self, data: object, fields: list) -> None:
+        self.fields = fields
+        self.data = data
+    
+    def get_data(self): 
+        many = type(self.data) == list
+        final_data: object
+
+        if many:
+            final_data = []
+
+            for elt in self.data:
+                dic =  {}
+                att = elt.__dict__
+                for i in self.fields:
+                    try:
+                        dic[i] = att[i]
+                    except Exception:
+                        try:
+                            serializer = self.__dict__[i]
+                        except Exception:
+                            raise Exception
+                        
+                        dic[i] = serializer
+                
+                final_data.append(dic)
+        
+        else:
+            
+            dic =  {}
+            att = self.data.__dict__
+            for i in self.fields:
+                try:
+                    dic[i] = att[i]
+                except Exception:
+                    try:
+                        serializer = getattr(self, i, "attribut non trouve")
+                    except Exception:
+                        print(f" i: {i}  self.dic: {self.__dict__}")
+                        ge = getattr(self, i, "attribut non trouve")
+                        print(f"{ge}")
+                        return {}
+                    
+                    print("pas d'exception")
+                    dic[i] = att[serializer]
+            
+            final_data = dic
+        
+        return final_data
+
+
 class Client_serializer(serializers.Serializer):
-    # user_id = serializers.IntegerField(source='id')
-    # utilisateur = serializers.CharField(max_length = 10)
-    # nom = serializers.CharField(max_length = 20)
-    # prenom = serializers.CharField(max_length = 20)
-    email = serializers.EmailField()
-    password = serializers.CharField()
-
-    # sexe = serializers.CharField(max_length = 1)
-    # telephone = serializers.CharField(max_length = 9)
-    # date_naissance = serializers.DateField(source='birthdate')
-
-    def create(self, validated_data):
-        print(validated_data['date_naissance'])
-
-        client = Client()
-        client.nom = validated_data["nom"]
-        client.prenom = validated_data["prenom"]
-        client.email = validated_data["email"]
-        client.sexe = validated_data["telephone"]
-        client.birthdate = validated_data['date_naissance']
-        client.utilisateur = client.nom.lower() + "_" + client.prenom.lower()
-
-        client.save()
-
-        return client
-
-    def update(self, instance: Client, validated_data):
-        client = Client.objects.get(utilisateur=instance.utilisateur)
-        client.nom = instance.nom
-        client.prenom = instance.prenom
-        client.email = instance.email
-        client.sexe = instance.sexe
-        client.password = instance.password
-        client.telephone = instance.telephone
-        client.birthdate = instance.birthdate
-        client.utilisateur = client.nom.lower() + "_" + client.prenom.lower()
-
-        client.save()
-        return instance
 
     class Meta:
         model = Client
+        fields = ['utilisateur', 'nom', 'prenom', 'email', 'sexe', 'telephone', 'date_naissance']
 
 
 class Plat_serializer(serializers.ModelSerializer):
